@@ -1,78 +1,174 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+
+#include <string>
 #include <doctest/doctest.h>
-#include "m3i.h"
+#include <m3i/m3i.h>
+#include <sstream>
 
-// enlarge
-// 0_1 vs 0_2
-TEST_CASE("Construct & copy") {
-    CHECK_NOTHROW(M3i a(2, 2, 2));
-    M3i test, b(2, 2, 2);
-    int64_t ptr[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-    CHECK_NOTHROW(test = b);
-}
+using namespace doctest::detail;
 
-TEST_CASE("Get/Set") {
-    int64_t ptr[8] = {0, 1, 2, 3, 4, 5, 6, 7};
-    M3i test(2, 2, 2);
-    CHECK_NOTHROW(test.SetElement(10, 1, 1, 1));
-    CHECK(test.At(1, 1, 1) == 10);
-    CHECK_THROWS(test.SetElement(1, 10, 1, 0));
-    CHECK_THROWS(test.At(1, 1, 10));
-}
-
-TEST_CASE("Resize") {
-    int64_t ptr[8] = {8, 1, 2, 3, 4, 5, 6, 7};
-    M3i test(2, 2, 2);
-    test.SetElement(8, 0, 0, 0);
-    CHECK_NOTHROW(test.Resize(1,1,1));
-    CHECK(test.GetSize() == 1);
-    CHECK_NOTHROW(test.Resize(2, 2, 2));
-    CHECK(test.At(1, 1, 1) == 0);
-    CHECK(test.At(0, 0, 0) == 8);
-}
-
-TEST_CASE("Copy & clone") {
-    int64_t ptr1[8] = {0, 1, 2, 3, 4, 5, 6, 7};
-    int64_t ptr2[8] = {0, 1, 2, 3, 4, 5, 6, 9};
-    M3i test1(2, 2, 2);
-    {
-        M3i test_cp = test1.copy();
-        M3i test_cn = test_cp.clone();
-        test_cp.SetElement(2, 0, 0, 0);
-        test_cn.SetElement(3, 0, 0, 0);
-        CHECK(test1.At(0, 0, 0) == 2);
-        test_cp.Resize(1, 1, 1);
-        CHECK_NOTHROW(test_cn.At(1, 1, 1));
+bool operator== (const M3i& left, const M3i& right) {
+    if ((left.Size(0) != right.Size(0)) || (left.Size(1) != right.Size(1)) ||
+        (left.Size(2) != right.Size(2))) {
+        return false;
     }
-    CHECK(test1.At(0, 0, 0) == 2);
-    CHECK_THROWS(test1.At(1, 1, 1));
-}
-
-TEST_CASE("input and output") {
-    int size[3] = {3, 2, 3};
-
-    M3i m1(size[0], size[1], size[2]);
-
-    // Filling tensor with random values
-    for (int x_id = 0; x_id < size[0]; ++x_id) {
-        for (int y_id = 0; y_id < size[1]; ++y_id) {
-            for (int z_id = 0; z_id < size[2]; ++z_id) {
-                m1.At(x_id, y_id, z_id) = rand();
+    for(int i = 0; i < left.Size(0); ++i) {
+        for(int j = 0; j < left.Size(1); ++j) {
+            for(int k = 0; k < left.Size(2); ++k) {
+                if (left.At(i, j, k) != right.At(i, j, k)) {
+                    return false;
+                }
             }
         }
     }
+    return true;
+}
 
-    std::stringstream str;
-    M3i m2;
+TEST_CASE("init")
+{
+    SUBCASE("simple init")
+    {
+        int d1 = 2;
+        int d2 = 3;
+        int d3 = 4;
+        M3i m3i(d1, d2, d3);
+        CHECK(m3i.Size(0) == d1);
+        CHECK(m3i.Size(1) == d2);
+        CHECK(m3i.Size(2) == d3);
+        CHECK_THROWS(m3i.Size(3));
+        for(int i = 0; i < d1; ++i) {
+            for(int j = 0; j < d2; ++j) {
+                for(int k = 0; k < d3; ++k) {
+                    CHECK(m3i.At(i, j, k) == int());
+                }
+            }
+        }
+    }
+    SUBCASE("invalid init")
+    {
+        CHECK_THROWS({M3i m3i(-1, 2, 3);});
+        CHECK_THROWS({M3i m3i(1, -2, 3);});
+        CHECK_THROWS({M3i m3i(1, 2, -3);});
+        CHECK_THROWS({M3i m3i(0, 2, 3);});
+        CHECK_THROWS({M3i m3i(1, 0, 3);});
+        CHECK_THROWS({M3i m3i(1, 2, 0);});
+    }
+    SUBCASE("copy")
+    {
+        int d1 = 2;
+        int d2 = 3;
+        int d3 = 4;
+        M3i m3i(d1, d2, d3);
+        M3i copy_m3i(m3i);
+        CHECK(copy_m3i == m3i);
+        copy_m3i = m3i;
+        CHECK(copy_m3i == m3i);
+    }
+    SUBCASE("move")
+    {
+        int d1 = 2;
+        int d2 = 3;
+        int d3 = 4;
+        M3i m3i(d1, d2, d3);
+        M3i copy_m3i = m3i;
+        M3i move_m3i(std::move(m3i));
+        CHECK(move_m3i == copy_m3i);
+        M3i second_m3i(d1, d2, d3);
+        move_m3i = std::move(second_m3i);
+        CHECK(move_m3i == copy_m3i);
+    }
+    SUBCASE("init by list")
+    {
+        M3i m3i = {{{1, 2, 3}, {4, 5, 6}}, {{7, 8, 9}, {10, 11, 12}}};
+        CHECK(m3i.Size(0) == 2);
+        CHECK(m3i.Size(1) == 2);
+        CHECK(m3i.Size(2) == 3);
+        for (int i = 0; i < m3i.Size(0); ++i) {
+            for (int j = 0; j < m3i.Size(1); ++j) {
+                for (int k = 0; k < m3i.Size(2); ++k) {
+                    CHECK(m3i.At(i, j, k) == 1 + i * m3i.Size(2) * m3i.Size(1) + j * m3i.Size(2)  + k);
+                }
+            }
+        }
+    }
+}
 
-    str << m1;
+TEST_CASE("resize")
+{
+    SUBCASE("normal")
+    {
+        M3i m3i = {{{1, 2, 3}, {4, 5, 6}}, {{7, 8, 9}, {10, 11, 12}}};
+        M3i copy = m3i;
+        m3i.Resize(3, 1, 5);
+        CHECK(m3i.Size(0) == 3);
+        CHECK(m3i.Size(1) == 1);
+        CHECK(m3i.Size(2) == 5);
+        // то, что должно получиться после Resize
+        M3i right_resized_m3i = {{{1, 2, 3, 0, 0}}, {{7, 8, 9, 0, 0}}, {{0, 0, 0, 0, 0}}};
+        for (int i = 0; i < m3i.Size(0); ++i) {
+            for (int j = 0; j < m3i.Size(1); ++j) {
+                for (int k = 0; k < m3i.Size(2); ++k) {
+                    CHECK(m3i.At(i, j, k) == right_resized_m3i.At(i, j, k));
+                }
+            }
+        }
+        CHECK(copy == m3i);
+    }
 
-    str >> m2;
+    SUBCASE("invalid")
+    {
+        M3i m3i = {{{1, 2, 3}, {4, 5, 6}}, {{7, 8, 9}, {10, 11, 12}}};
+        CHECK_THROWS({m3i.Resize(-1, 2, 3);});
+        CHECK_THROWS({m3i.Resize(1, -2, 3);});
+        CHECK_THROWS({m3i.Resize(1, 2, -3);});
+        CHECK_THROWS({m3i.Resize(0, 2, 3);});
+        CHECK_THROWS({m3i.Resize(1, 0, 3);});
+        CHECK_THROWS({m3i.Resize(1, 2, 0);});
+    }
+}
 
-    for (int x_id = 0; x_id < size[0]; ++x_id) {
-        for (int y_id = 0; y_id < size[1]; ++y_id) {
-            for (int z_id = 0; z_id < size[2]; ++z_id) {
-                CHECK(m1.At(x_id, y_id, z_id) == m2.At(x_id, y_id, z_id));
+TEST_CASE("fill")
+{
+    M3i m3i = {{{1, 2, 3}, {4, 5, 6}}, {{7, 8, 9}, {10, 11, 12}}};
+    M3i copy = m3i;
+    m3i.Fill(4);
+    for (int i = 0; i < m3i.Size(0); ++i) {
+        for (int j = 0; j < m3i.Size(1); ++j) {
+            for (int k = 0; k < m3i.Size(2); ++k) {
+                CHECK(m3i.At(i, j, k) == 4);
+            }
+        }
+    }
+    CHECK(copy == m3i);
+}
+
+TEST_CASE("input/output") {
+    M3i m3i;
+    std::stringstream input_stream;
+    input_stream << "2 2 3\n 1 2 3\n 4 5 6\n 7 8 9\n 10 11 12\n";
+    input_stream >> m3i;
+    M3i right_m3i = {{{1, 2, 3}, {4, 5, 6}}, {{7, 8, 9}, {10, 11, 12}}};
+    CHECK(m3i == right_m3i);
+    std::stringstream output_stream;
+    output_stream << m3i;
+    std::string str_m3i;
+    output_stream >> str_m3i;
+    CHECK(str_m3i == "size:");
+    int d1;
+    int d2;
+    int d3;
+    output_stream >> d1;
+    output_stream >> d2;
+    output_stream >> d3;
+    CHECK(d1 == 2);
+    CHECK(d2 == 2);
+    CHECK(d3 == 3);
+    for(int i = 0; i < d1; ++i) {
+        for(int j = 0; j < d2; ++j) {
+            for(int k = 0; k < d3; ++k) {
+                int number;
+                output_stream >> number;
+                CHECK(right_m3i.At(i, j, k) == number);
             }
         }
     }
