@@ -145,7 +145,7 @@ TEST_CASE("fill")
 TEST_CASE("input/output") {
     M3i m3i;
     std::stringstream input_stream;
-    input_stream << "2 2 3\n 1 2 3\n 4 5 6\n 7 8 9\n 10 11 12\n";
+    input_stream << "size: 2 2 3\n 1 2 3\n 4 5 6\n 7 8 9\n 10 11 12\n";
     input_stream >> m3i;
     M3i right_m3i = {{{1, 2, 3}, {4, 5, 6}}, {{7, 8, 9}, {10, 11, 12}}};
     CHECK(m3i == right_m3i);
