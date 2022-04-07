@@ -248,7 +248,8 @@ M3i &M3i::operator=(M3i &&right) noexcept {
 std::istream& operator>>(std::istream &in, M3i &a)
 {
     int64_t h, w, d, element;
-    in >> w >> h >> d;
+    std::string size;
+    in >> size >> w >> h >> d;
     a = M3i(w, h, d);
     for (int i=0; i < w; ++i) {
         for (int j=0; j < h; ++j) {
