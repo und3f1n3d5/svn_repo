@@ -4,38 +4,61 @@
 #pragma once
 #ifndef SE_STUDY_PAVLIUCHENKOV_BITSET_H
 #define SE_STUDY_PAVLIUCHENKOV_BITSET_H
+#include <vector>
+#include <cstdint>
+#include <iosfwd>
+#include <stdexcept>
 
-
-class Bitset {
+class BitSet {
+private:
+    // класс BitHolder - деталь реализации
+    class BitHolder;
 public:
-    Bitset();
-    Bitset(const Bitset& other);
-    Bitset(Bitset&& other);
-
-    ~Bitset();
-
-    Bitset& operator=(const Bitset& other);
-    Bitset& operator=(Bitset&& other);
-
-    Bitset(const int size, const bool val = false);
-
+    BitSet() = default;
+    BitSet(const BitSet& other) = default;
+    BitSet(BitSet&& other) = default;
+    ~BitSet() = default;
+    BitSet& operator=(const BitSet& other) = default;
+    BitSet& operator=(BitSet&& other) = default;
+    BitSet(const int size, const bool val = false);
     int Size() const;
     void Resize(const int size);
-
+    void Fill(const bool val); // not done
     bool operator[](const int index) const;
-
-    Bitset& operator|(const Bitset& other);
-    Bitset& operator&(const Bitset& other);
-    Bitset& operator^(const Bitset& other);
-    Bitset& operator~();
+    BitHolder operator[](const int index);
+    BitSet& operator|=(const BitSet& other);
+    BitSet& operator&=(const BitSet& other);
+    BitSet& operator^=(const BitSet& other);
+    const BitSet operator~() const;
 private:
-    class BoolHolder {
-        BoolHolder& operator=(const BoolHolder& other);
+    // класс BitHolder - деталь реализации
+    class BitHolder {
+    public:
+        BitHolder(BitSet& bs, int index);
+        BitHolder(const BitHolder& other) = default;
+        BitHolder(BitHolder&& other) = default;
+        ~BitHolder() = default;
+        BitHolder& operator=(const BitHolder& other) = default;
+        BitHolder& operator=(BitHolder&& other) = default;
+        BitHolder& operator=(const bool val);
+        operator bool() const;
     private:
-        BoolHolder();
-        unsigned char* ptr_;
+        BitHolder();
+        BitSet& bs_;
+        int index_;
     };
+    std::vector<uint16_t> array_;
+    int size_ = 0;
+    static const int BIT_SIZE = 16; // todo rename
 };
+
+const BitSet operator^ (const BitSet& left, const BitSet& right);
+const BitSet operator& (const BitSet& left, const BitSet& right);
+const BitSet operator| (const BitSet& left, const BitSet& right);
+
+std::ostream& operator<<(std::ostream& ostrm, const BitSet& bs);
+std::istream& operator>>(std::istream& istrm, BitSet& bs);
+
 
 #endif // #define BITSET_HEAD_H_2022_03_03
 
