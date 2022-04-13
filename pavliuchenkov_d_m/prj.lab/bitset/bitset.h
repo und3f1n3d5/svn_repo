@@ -11,8 +11,8 @@
 
 class BitSet {
 private:
-    // класс BitHolder - деталь реализации
-    class BitHolder;
+    class BitHelper;
+
 public:
     BitSet() = default;
     BitSet(const BitSet& other) = default;
@@ -20,47 +20,44 @@ public:
     ~BitSet() = default;
     BitSet& operator=(const BitSet& other) = default;
     BitSet& operator=(BitSet&& other) = default;
-    BitSet(const int size, const bool val = false);
-    int Size() const;
-    void Resize(const int size);
-    void Fill(const bool val); // not done
-    bool operator[](const int index) const;
-    BitHolder operator[](const int index);
-    BitSet& operator|=(const BitSet& other);
-    BitSet& operator&=(const BitSet& other);
+    explicit BitSet(int size, bool val = false);
+    [[nodiscard]] int Size() const;
+    void Resize(int size);
+    void Fill(bool val); // not done
+    bool operator[](int ind) const;
+    BitHelper operator[](int ind);
+    BitSet& operator|=(const BitSet& right);
+    BitSet& operator&=(const BitSet& right);
     BitSet& operator^=(const BitSet& other);
-    const BitSet operator~() const;
+    BitSet operator~() const;
+
 private:
-    // класс BitHolder - деталь реализации
-    class BitHolder {
+    class BitHelper {
     public:
-        BitHolder(BitSet& bs, int index);
-        BitHolder(const BitHolder& other) = default;
-        BitHolder(BitHolder&& other) = default;
-        ~BitHolder() = default;
-        BitHolder& operator=(const BitHolder& other) = default;
-        BitHolder& operator=(BitHolder&& other) = default;
-        BitHolder& operator=(const bool val);
-        operator bool() const;
+        BitHelper(BitSet& bs, int index);
+        BitHelper(const BitHelper& other) = default;
+        BitHelper(BitHelper&& other) = default;
+        ~BitHelper() = default;
+        BitHelper& operator=(const BitHelper& other) = default;
+        BitHelper& operator=(BitHelper&& other) = default;
+        BitHelper& operator=(bool val);
+        explicit operator bool() const;
     private:
-        BitHolder();
+        BitHelper();
         BitSet& bs_;
-        int index_;
+        int idx_;
     };
     std::vector<uint16_t> array_;
-    int size_ = 0;
-    static const int BIT_SIZE = 16; // todo rename
+    int sz_ = 0;
+    static const int BSZ = 16;
 };
 
-const BitSet operator^ (const BitSet& left, const BitSet& right);
-const BitSet operator& (const BitSet& left, const BitSet& right);
-const BitSet operator| (const BitSet& left, const BitSet& right);
+BitSet operator^ (const BitSet& left, const BitSet& right);
+BitSet operator& (const BitSet& left, const BitSet& right);
+BitSet operator| (const BitSet& left, const BitSet& right);
 
-std::ostream& operator<<(std::ostream& ostrm, const BitSet& bs);
+std::ostream& operator<<(std::ostream& ostrm, const BitSet& bitset);
 std::istream& operator>>(std::istream& istrm, BitSet& bs);
-
-
-#endif // #define BITSET_HEAD_H_2022_03_03
 
 
 #endif //SE_STUDY_PAVLIUCHENKOV_BITSET_H
