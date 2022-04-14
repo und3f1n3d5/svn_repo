@@ -26,7 +26,7 @@ int main() {
     {
         // 10x10x10 - 10 times
         int dim1 = 10, dim2 = 10, dim3 = 10;
-        int iter = 10;
+        int iter = 20;
         std::vector<double> times;
         auto start = Clock::now();
         times = test_time(dim1, dim2, dim3, iter);
@@ -51,8 +51,8 @@ int main() {
 
     {
         // 100x100x100 - 100 times
-        int dim1 = 100, dim2 = 100, dim3 = 100;
-        int iter = 100;
+        int dim1 = 200, dim2 = 200, dim3 = 200;
+        int iter = 20;
         std::vector<double> times;
         auto start = Clock::now();
         times = test_time(dim1, dim2, dim3, iter);
@@ -77,8 +77,8 @@ int main() {
 
     {
         // 1000x1000x1000 - 1000 times
-        int dim1 = 1000, dim2 = 1000, dim3 = 1000;
-        int iter = 1000;
+        int dim1 = 900, dim2 = 900, dim3 = 900;
+        int iter = 20;
         std::vector<double> times;
         auto start = Clock::now();
         times = test_time(dim1, dim2, dim3, iter);
@@ -119,4 +119,89 @@ Size: 1000x1000x1000
 Iterations: 1000
  ???
  (Started to worry about my notebook)
+ */
+
+
+/*
+Dron
+Size: 10x10x10
+Iterations: 20
+Mean time (ms): 3.3123
+Median time (ms): 3.0074
+Dispersion (ms): 1.7736
+
+Size: 200x200x200
+Iterations: 20
+Mean time (ms): 24465.8
+Median time (ms): 24340.3
+Dispersion (ms): 1.5496e+07
+
+Size: 900x900x900
+Iterations: 20
+Mean time (ms): 3.11746e+06
+Median time (ms): 2.94252e+06
+Dispersion (ms): 3.60293e+11
+ */
+
+/*
+Padas
+Size: 10x10x10
+Iterations: 20
+Mean time (ms): 2.809
+Median time (ms): 2.43915
+Dispersion (ms): 1.39161
+
+Size: 200x200x200
+Iterations: 20
+Mean time (ms): 18811.5
+Median time (ms): 18695.8
+Dispersion (ms): 1.04017e+07
+
+Size: 900x900x900
+Iterations: 20
+Mean time (ms): 2.27761e+06
+Median time (ms): 2.13855e+06
+Dispersion (ms): 2.20334e+11
+ */
+
+/*
+Orusov
+Size: 10x10x10
+Iterations: 20
+Mean time (ms): 2.1347
+Median time (ms): 1.8211
+Dispersion (ms): 0.550256
+
+Size: 200x200x200
+Iterations: 20
+Mean time (ms): 14866.4
+Median time (ms): 14744.7
+Dispersion (ms): 1.55989e+07
+
+Size: 900x900x900
+Iterations: 20
+Mean time (ms): 2.59879e+06
+Median time (ms): 2.4075e+06
+Dispersion (ms): 3.68089e+11
+ */
+
+/*
+ Pavliuchenkov
+Size: 10x10x10
+Iterations: 20
+Mean time (ms): 1.1745
+Median time (ms): 0.7534
+Dispersion (ms): 8.26166
+
+Size: 200x200x200
+Iterations: 20
+Mean time (ms): 5.72385
+Median time (ms): 2.24055
+Dispersion (ms): 1.11224
+
+Size: 900x900x900
+Iterations: 20
+Mean time (ms): 9.65845
+Median time (ms): 2.28585
+Dispersion (ms): 0.115659
  */

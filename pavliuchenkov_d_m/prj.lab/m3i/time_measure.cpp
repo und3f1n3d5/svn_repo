@@ -26,7 +26,7 @@ int main() {
     {
         // 10x10x10 - 10 times
         int dim1 = 10, dim2 = 10, dim3 = 10;
-        int iter = 10;
+        int iter = 20;
         std::vector<double> times;
         auto start = Clock::now();
         times = test_time(dim1, dim2, dim3, iter);
@@ -51,8 +51,8 @@ int main() {
 
     {
         // 100x100x100 - 100 times
-        int dim1 = 100, dim2 = 100, dim3 = 100;
-        int iter = 100;
+        int dim1 = 200, dim2 = 200, dim3 = 200;
+        int iter = 20;
         std::vector<double> times;
         auto start = Clock::now();
         times = test_time(dim1, dim2, dim3, iter);
@@ -77,8 +77,8 @@ int main() {
 
     {
         // 1000x1000x1000 - 1000 times
-        int dim1 = 1000, dim2 = 1000, dim3 = 1000;
-        int iter = 1000;
+        int dim1 = 900, dim2 = 900, dim3 = 900;
+        int iter = 20;
         std::vector<double> times;
         auto start = Clock::now();
         times = test_time(dim1, dim2, dim3, iter);
