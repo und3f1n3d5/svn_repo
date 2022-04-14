@@ -140,8 +140,5 @@ std::istream& operator>>(std::istream& istrm, BitSet& bs) {
 }
 
 std::ostream& operator<<(std::ostream& ostrm, const BitSet& bitset) {
-    for (int i = 0; i < bitset.Size(); ++i) {
-        ostrm << bitset[i];
-    }
     return ostrm;
 }
