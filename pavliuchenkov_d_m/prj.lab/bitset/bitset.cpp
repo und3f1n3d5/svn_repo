@@ -22,17 +22,21 @@ BitSet operator^ (const BitSet& left, const BitSet& right) {
 }
 
 void BitSet::Resize(const int size) {
-    if (size <= 0)
+    if (size <= 0) {
         throw std::invalid_argument("Size must be positive");
+    }
     std::vector<uint16_t> new_arr = std::vector<uint16_t>(size / BSZ + 1, 0);
     if (size >= sz_) {
-        for (int i = 0; i < array_.size(); ++i)
+        for (int i = 0; i < array_.size(); ++i) {
             new_arr[i] = array_[i];
+        }
     } else {
-        for (int i = 0; i < new_arr.size(); ++i)
+        for (int i = 0; i < new_arr.size(); ++i) {
             new_arr[i] = array_[i];
-        if (size % BSZ > 0)
+        }
+        if (size % BSZ > 0) {
             new_arr.push_back(array_[new_arr.size()] >> (BSZ - size % BSZ));
+        }
     }
     array_ = new_arr;
     sz_ = size;
@@ -76,17 +80,20 @@ BitSet BitSet::operator~() const {
         new_bitset.array_[i] = ~array_[i];
     }
     int remainder = sz_ % BSZ;
-    if (remainder > 0)
+    if (remainder > 0) {
         new_bitset.array_[array_.size() - 1] = (UINT16_MAX >> (BSZ - remainder)) &
                                                (~array_[array_.size() - 1]);
+    }
     return new_bitset;
 }
 
 BitSet& BitSet::operator^=(const BitSet& right) {
-    if (this->sz_ != right.sz_)
+    if (this->sz_ != right.sz_) {
         throw std::invalid_argument("Dimensions of bitsets must be equal");
-    for (int i = 0; i < array_.size(); ++i)
+    }
+    for (int i = 0; i < array_.size(); ++i) {
         array_[i] ^= right.array_[i];
+    }
     return *this;
 }
 
@@ -136,7 +143,7 @@ BitSet &BitSet::operator=(BitSet &&other) noexcept {
 
 
 
-/////////////return <#initializer#>;///////////////////////// BitHelper ////////////////////////////
+///////////////////////// BitHelper ////////////////////////////
 
 
 BitSet::BitHelper::BitHelper(BitSet& bs, int index): bs_(bs), idx_(index) {}
@@ -148,10 +155,12 @@ BitSet::BitHelper::operator bool() const {
 
 BitSet::BitHelper& BitSet::BitHelper::operator=(const bool val) {
     uint16_t mask = (1 << (idx_ % BitSet::BSZ)) ^ UINT16_MAX;
-    if (!val)
+    if (!val) {
         bs_.array_[idx_ / BitSet::BSZ] &= mask;
-    else
+    }
+    else {
         bs_.array_[idx_ / BitSet::BSZ] |= (~mask);
+    }
     return *this;
 }
 
