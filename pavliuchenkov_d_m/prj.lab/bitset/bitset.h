@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <iosfwd>
 #include <stdexcept>
+#include <iostream>
 
 class BitSet {
 private:
@@ -16,14 +17,14 @@ private:
 public:
     BitSet() = default;
     BitSet(const BitSet& other) = default;
-    BitSet(BitSet&& other) = default;
+    BitSet(BitSet&& other) noexcept ;
     ~BitSet() = default;
     BitSet& operator=(const BitSet& other) = default;
-    BitSet& operator=(BitSet&& other) = default;
+    BitSet& operator=(BitSet&& other) noexcept;
     explicit BitSet(int size, bool val = false);
     [[nodiscard]] int Size() const;
     void Resize(int size);
-    void Fill(bool val); // not done
+    void Fill(bool val);
     bool operator[](int ind) const;
     BitHelper operator[](int ind);
     BitSet& operator|=(const BitSet& right);
@@ -57,7 +58,7 @@ BitSet operator& (const BitSet& left, const BitSet& right);
 BitSet operator| (const BitSet& left, const BitSet& right);
 
 std::ostream& operator<<(std::ostream& ostrm, const BitSet& bitset);
-std::istream& operator>>(std::istream& istrm, BitSet& bs);
+std::istream& operator>>(std::istream& istrm, BitSet& bitset);
 
 
 #endif //SE_STUDY_PAVLIUCHENKOV_BITSET_H
